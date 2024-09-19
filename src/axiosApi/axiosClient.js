@@ -24,6 +24,12 @@ axiosClient.interceptors.request.use(
     error => Promise.reject(error)
 );
 
+const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh');
+    window.location.href = '/login'; // 로그아웃 후 로그인 페이지로 리다이렉트
+};
+
 //** acces 토큰을 refresh 토큰을 이용하여 새로 발급받는 메소드  **//
 // 헤더에 Authorization 라는 이름으로 refreshToken을 /reissue 엔드포인트로 반환,
 // 서버로부터 새로운 access토큰을 헤더로, refresh토큰을 data로 반환받는다
@@ -92,7 +98,7 @@ axiosClient.interceptors.response.use(
                 return new Promise(() => {}); // 새로운 빈 Promise 반환하여 후속 처리가 되지 않게 함
             }
         }
-        
+
         return Promise.reject(error);
     }
 );
