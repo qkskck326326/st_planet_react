@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 200px;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.menuList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menuItem {
+    padding: 10px;
+    cursor: pointer;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+.menuItem:hover {
+    background-color: #f0f0f0;
+}
+
+.menuItemActive {
+    background-color: #ddd;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* 메인페이지로 이동 버튼 스타일 */
+.mainPageButton {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #ff884f; /* 녹색 버튼 */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+}
+
+.mainPageButton:hover {
+    background-color: #f15c00;
+}
