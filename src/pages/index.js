@@ -1,10 +1,15 @@
 // src/pages/index.js
-import { useState } from 'react';
+import { useState, useContext } from 'react'; // useContext 추가
+import { useRouter } from 'next/router'; // useRouter 추가
 import { axiosClient } from '../axiosApi/axiosClient'; // axiosClient import
 import axios from 'axios';
 import Link from 'next/link';
+import { GlobalStateContext } from '../context/GlobalStateProvider'; // 전역 상태 가져오기
 
 export default function Home() {
+  const isLogin = useContext(GlobalStateContext);  // 전역 상태에서 isLogin 가져오기
+  const router = useRouter();
+
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -42,25 +47,33 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h1>Welcome to Next.js!</h1>
-      <Link href={'/customer/login'}>로그인</Link><br/>
-      <button onClick={checkToken} >토큰 확인</button>
+      <div>
+        <h1>Welcome to Next.js!</h1>
 
-      {/* 버튼 클릭 시 fetchData 함수 호출 */}
-      <button onClick={fetchData1}>Test 호출</button>
-      <button onClick={fetchData2}>Test 호출 with not Token</button>
 
-      {/* 데이터 표시 */}
-      {data && (
-        <div>
-          <h2>Fetched Data:</h2>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </div>
-      )}
 
-      {/* 에러 메시지 표시 */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    </div>
+        {!isLogin ? (
+            <Link href={'/customer/login'}>로그인</Link>
+        ) : (
+            <Link href={'/mypage'}>마이페이지</Link>
+        )}
+
+        <button onClick={checkToken} >토큰 확인</button>
+
+        {/* 버튼 클릭 시 fetchData 함수 호출 */}
+        <button onClick={fetchData1}>Test 호출</button>
+        <button onClick={fetchData2}>Test 호출 with not Token</button>
+
+        {/* 데이터 표시 */}
+        {data && (
+            <div>
+              <h2>Fetched Data:</h2>
+              <pre>{JSON.stringify(data, null, 2)}</pre>
+            </div>
+        )}
+
+        {/* 에러 메시지 표시 */}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
   );
 }
