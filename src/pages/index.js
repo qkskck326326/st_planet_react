@@ -1,5 +1,5 @@
 // src/pages/index.js
-import { useState, useContext } from 'react'; // useContext 추가
+import {useState, useContext, useEffect} from 'react'; // useContext 추가
 import { useRouter } from 'next/router'; // useRouter 추가
 import { axiosClient } from '../axiosApi/axiosClient'; // axiosClient import
 import axios from 'axios';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { GlobalStateContext } from '../context/GlobalStateProvider'; // 전역 상태 가져오기
 
 export default function Home() {
-  const isLogin = useContext(GlobalStateContext);  // 전역 상태에서 isLogin 가져오기
+  const { isLogin } = useContext(GlobalStateContext);  // 전역 상태에서 isLogin 가져오기
   const router = useRouter();
 
   const [data, setData] = useState(null);
