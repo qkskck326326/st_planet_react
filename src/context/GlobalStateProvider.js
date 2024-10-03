@@ -1,6 +1,7 @@
 // context/GlobalStateContext.js
 import React, { createContext, useState, useEffect } from 'react';
-import OutputModal from '../components/OutputModal';
+import { setAxiosInterceptors } from '../axiosApi/axiosClient';
+import OutputModal from '../components/common/OutputModal';
 
 // 로그인 상태와 에러 메시지를 저장할 Context 생성
 export const GlobalStateContext = createContext();
@@ -44,6 +45,12 @@ export const GlobalStateProvider = ({ children }) => {
       setIsLogin(false);
     }
   }, []);
+
+  // axiosClient에 setErrorMessage를 전달, 인터셉터에서 사용 가능하도록 설정
+  // 1번만 실행되게 하기 위해 의존성배열에 해당 setter 추가
+  useEffect(() => {
+    setAxiosInterceptors(setErrorMessage);
+  }, [setErrorMessage]);
 
   // 에러 메시지가 업데이트될 때 모달 자동으로 표시
   useEffect(() => {
