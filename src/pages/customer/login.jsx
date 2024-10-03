@@ -1,8 +1,12 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import { useRouter } from 'next/router';
 import { axiosClient } from '../../axiosApi/axiosClient';
+import {GlobalStateUpdateContext } from "../../context/GlobalStateProvider";
 
 const LoginPage = () => {
+  const setIsLogin = useContext(GlobalStateUpdateContext); // 전역 로그인 상태 변경 함수
+  const setErrorMessage = useContext(GlobalStateUpdateContext); // 전역 에러메세지 상태 변경 함수
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,7 +23,7 @@ const LoginPage = () => {
   };
 
   // 로그인 요청 처리
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError(''); // 에러 메시지 초기화
 
@@ -35,8 +39,10 @@ const LoginPage = () => {
       localStorage.setItem('token', accessToken.split(' ')[1]);
       localStorage.setItem('refresh', refreshToken.split(' ')[1]);
     
-      // 로그인 후 대시보드로 리디렉션
-      router.push('/');
+      // 로그인 후 대시보드로 리디렉션 & 로그이 상태 변경
+      setIsLogin(true);
+      await router.push('/');
+      
     } catch (err) {
       // 401 상태 코드일 경우 사용자에게 메시지 표시
       if (err.response && err.response.status === 401) {
@@ -53,7 +59,7 @@ const LoginPage = () => {
       <h2>로그인</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLogin}>
         <div>
           <label>이메일:</label>
           <input
