@@ -27,7 +27,7 @@ axiosClient.interceptors.request.use(
 const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh');
-    window.location.href = '/login'; // 로그아웃 후 로그인 페이지로 리다이렉트
+    window.location.href = '/customer/login'; // 로그아웃 후 로그인 페이지로 리다이렉트
 };
 
 //** acces 토큰을 refresh 토큰을 이용하여 새로 발급받는 메소드  **//
@@ -78,29 +78,38 @@ const getNewAccessToken = async () => {
 // 해당 요청에서 401 에러 발생시(refreshToken 또한 expired) 무한 루프로 들어가기 떄문에 
 // originalRequest._retry 라는 설정되지 않은(false or undefined 반환)속성을 새로 flag로 사용하여, 무한루프를 방지하며,  
 // 새롭게 발급받은 access토큰을 헤더에 넣어 실패한 요청을 다시 요청하고, access토큰을 로컬 스토리지에 저장한다.
-axiosClient.interceptors.response.use(
-    response => response,
-    async (error) => {
-        const originalRequest = error.config;
+const setAxiosInterceptors = (setErrorMessage) => {
+    axiosClient.interceptors.response.use(
+        response => response,
+        async (error) => {
+            const originalRequest = error.config;
+            const errorMessage = error.response?.data?.message;
 
-        if (error.response) {
-            if (error.response.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true;
-                const newAccessToken = await getNewAccessToken();
-                if (newAccessToken) {
-                    originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                    return axiosClient(originalRequest);
+            if (error.response) {
+
+                if (error.response.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+                    const newAccessToken = await getNewAccessToken();
+                    if (newAccessToken) {
+                        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                        return axiosClient(originalRequest);
+                    }
+                }
+
+                if (error.response.status === 403) {
+                    if (errorMessage === "ip_error") {
+                        // 여기서 setErrorMessage 사용
+                        setErrorMessage("다른 곳에서 로그인 하셨습니다.");
+                        return new Promise(() => {}); // 빈 Promise로 후속 처리 방지
+                    }
+                    logout();
+                    return new Promise(() => {}); // 후속 처리가 되지 않도록 함
                 }
             }
 
-            if (error.response.status === 403) {
-                logout();
-                return new Promise(() => {}); // 새로운 빈 Promise 반환하여 후속 처리가 되지 않게 함
-            }
+            return Promise.reject(error);
         }
+    );
+};
 
-        return Promise.reject(error);
-    }
-);
-
-export { axiosClient };
+export { axiosClient, setAxiosInterceptors };
