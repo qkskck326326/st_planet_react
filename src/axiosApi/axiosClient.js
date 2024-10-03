@@ -100,6 +100,7 @@ const setAxiosInterceptors = (setErrorMessage) => {
                     if (errorMessage === "ip_error") {
                         // 여기서 setErrorMessage 사용
                         setErrorMessage("다른 곳에서 로그인 하셨습니다.");
+                        logout();
                         return new Promise(() => {}); // 빈 Promise로 후속 처리 방지
                     }
                     logout();
