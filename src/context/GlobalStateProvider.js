@@ -1,6 +1,6 @@
 // context/GlobalStateContext.js
 import React, { createContext, useState, useEffect } from 'react';
-import { setAxiosInterceptors } from '../axiosApi/axiosClient';
+import {axiosClient, setAxiosInterceptors} from '../axiosApi/axiosClient';
 import OutputModal from '../components/common/OutputModal';
 
 // 로그인 상태와 에러 메시지를 저장할 Context 생성
@@ -16,7 +16,7 @@ export const GlobalStateProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('refresh');
 
-    if (token) {
+    if (token && token !== 'null' && token !== null) {
       const decodeToken = (token) => {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
