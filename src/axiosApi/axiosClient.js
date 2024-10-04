@@ -35,15 +35,16 @@ const logout = () => {
 // 서버로부터 새로운 access토큰을 헤더로, refresh토큰을 data로 반환받는다
 const getNewAccessToken = async () => {
     console.log('accessToken 재발급 절차 진행');
+    const refreshToken = localStorage.getItem('refresh');
     try {
-        const refreshToken = localStorage.getItem('refresh');
-        console.log('Reissue request sent with refresh token:', refreshToken);
+
+        console.log('refresh 토큰으로 Reissue요청:', refreshToken);
         const response = await axiosClient.post('/auth/reissue', null, {
             headers: {
                 'Authorization': `Bearer ${refreshToken}`
             }
         });
-        console.log('Reissue response received:', response);
+        console.log('Reissue 요청 완료:', response);
 
         // 응답 바디에서 액세스 토큰을 추출합니다.
         const newAccessToken = response.data.accessToken; // 서버가 액세스 토큰을 응답 바디에 포함하도록 해야 함
@@ -53,8 +54,8 @@ const getNewAccessToken = async () => {
 
         localStorage.setItem('token', newAccessToken);
 
-        // 서버에서 반환한 새로운 리프레시 토큰이 있는 경우 저장
-        const newRefreshToken = response.data.refresh; // 서버가 리프레시 토큰을 응답 바디에 포함하도록 해야 함
+        // 서버에서 반환한 새로운 리프레시 토큰 저장
+        const newRefreshToken = response.data.refresh; // 서버에서 요청 바디에 포함한 리프레시 토큰 추충
         if (newRefreshToken) {
             localStorage.setItem('refresh', newRefreshToken);
         }
@@ -83,10 +84,19 @@ const setAxiosInterceptors = (setErrorMessage) => {
         response => response,
         async (error) => {
             const originalRequest = error.config;
-            const errorMessage = error.response?.data?.message;
+            const errorMessage = error.response.data.error;
+            console.log('에러 객체 : ', error)
+            console.log("에러메세지 : " + errorMessage);
+            console.log('요청 원문 : ', originalRequest);
+
+            // 본 if문 아래의 요청이 진행 된 적이 있어 _retry 속성이 존재한다면 로그아웃 처리
+            if(originalRequest._retry){
+                setErrorMessage('로그인이 만료되어 로그아웃됩니다.');
+                logout();
+            }
 
             if (error.response) {
-
+                // 에러 status 401  && 본 함수 내부 첫번째 요청 일 것 && 에러 메세지 InvalidRefreshToken(리프레쉬도 만료))
                 if (error.response.status === 401 && !originalRequest._retry) {
                     originalRequest._retry = true;
                     const newAccessToken = await getNewAccessToken();
@@ -99,13 +109,14 @@ const setAxiosInterceptors = (setErrorMessage) => {
                 if (error.response.status === 403) {
                     if (errorMessage === "ip_error") {
                         // 여기서 setErrorMessage 사용
-                        setErrorMessage("다른 곳에서 로그인 하셨습니다.");
+                        setErrorMessage("다른 곳에서 로그인 중이며 로그아웃 처리됩니다.");
                         logout();
                         return new Promise(() => {}); // 빈 Promise로 후속 처리 방지
                     }
                     logout();
                     return new Promise(() => {}); // 후속 처리가 되지 않도록 함
                 }
+                setErrorMessage(errorMessage);
             }
 
             return Promise.reject(error);
