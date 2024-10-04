@@ -55,11 +55,14 @@ export default function Home() {
 
 
         {!isLogin ? (
-            <Link href={'/customer/login'}>로그인</Link>
+            <div>
+              <Link href={'/customer/login'}>로그인</Link>&nbsp;&nbsp;
+              <Link href={'/customer/register'}>회원가입</Link>
+            </div>
         ) : (
             <div>
-            <Link href={'/mypage'}>마이페이지</Link>
-            <Logout setIsLogin={setIsLogin} setErrorMessage={setErrorMessage} />
+              <Link href={'/mypage'}>마이페이지</Link>
+              <Logout setIsLogin={setIsLogin} setErrorMessage={setErrorMessage} />
             </div>
         )}
 
