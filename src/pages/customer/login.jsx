@@ -4,8 +4,7 @@ import { axiosClient } from '../../axiosApi/axiosClient';
 import {GlobalStateUpdateContext } from "../../context/GlobalStateProvider";
 
 const LoginPage = () => {
-  const { setIsLogin } = useContext(GlobalStateUpdateContext); // 전역 로그인 상태 변경 함수
-  const setErrorMessage = useContext(GlobalStateUpdateContext); // 전역 에러메세지 상태 변경 함수
+  const { setIsLogin, setErrorMessage } = useContext(GlobalStateUpdateContext);
 
   const [formData, setFormData] = useState({
     email: '',
