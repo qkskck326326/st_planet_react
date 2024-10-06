@@ -5,7 +5,8 @@ import { axiosClient } from '../axiosApi/axiosClient'; // axiosClient import
 import axios from 'axios';
 import Link from 'next/link';
 import {GlobalStateContext, GlobalStateUpdateContext} from '../context/GlobalStateProvider';
-import Logout from "../components/customer/Logout"; // 전역 상태 가져오기
+import Logout from "../components/customer/Logout";
+import LoginManager from "../components/customer/LoginManager"; // 전역 상태 가져오기
 
 export default function Home() {
   const { isLogin} = useContext(GlobalStateContext);
@@ -63,6 +64,7 @@ export default function Home() {
             <div>
               <Link href={'/mypage'}>마이페이지</Link>
               <Logout setIsLogin={setIsLogin} setErrorMessage={setErrorMessage} />
+              <LoginManager/>
             </div>
         )}
 
