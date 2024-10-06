@@ -97,7 +97,7 @@ const setAxiosInterceptors = (setErrorMessage) => {
 
             if (error.response) {
                 // 에러 status 401  && 본 함수 내부 첫번째 요청 일 것 && 에러 메세지 InvalidRefreshToken(리프레쉬도 만료))
-                if (error.response.status === 401 && !originalRequest._retry) {
+                if (error.response.status === 401 && !(originalRequest._retry === true)) {
                     originalRequest._retry = true;
                     const newAccessToken = await getNewAccessToken();
                     if (newAccessToken) {
