@@ -10,8 +10,11 @@ import ReturnManagement from '../../components/admin/returnManagement/ReturnMana
 import SalesManagement from '../../components/admin/salesManagement/SalesManagement';
 import SalesRank from '../../components/admin/salesRank/SalesRank';
 
-const Index = () => {
+const admin = () => {
+    //선택된 메뉴의 상태를 관리하기 위해 사용됨. 사용자가 메뉴를 클릭할 때마다 상태가 업데이트됨.
     const [selectedMenu, setSelectedMenu] = useState(1);
+
+    //Next.js의 useRouter 훅을 사용하여 페이지 간 이동을 처리함.
     const router = useRouter(); // useRouter 사용
 
     const menuItems = [
@@ -30,7 +33,7 @@ const Index = () => {
 
     // 메인페이지로 이동 핸들러
     const goToMainPage = () => {
-        router.push('/'); // 메인페이지로 이동 (index.js)
+        router.push('/').then(r => {}); // 메인페이지로 이동 (index.js)
     };
 
     return (
@@ -70,4 +73,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default admin;
