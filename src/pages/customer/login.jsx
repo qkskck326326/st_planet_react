@@ -45,9 +45,9 @@ const LoginPage = () => {
     } catch (err) {
       // 401 상태 코드일 경우 사용자에게 메시지 표시
       if (err.response && err.response.status === 401) {
-        setError('Invalid email or password');
+        setErrorMessage('이메일과 비밀번호가 일치하지 않습니다.');
       } else {
-        setError('Login failed. Please try again.');
+        setErrorMessage('예상치 못한 오류로 로그인을 실패하였습니다.');
       }
       console.error('Login error:', err);
     }
