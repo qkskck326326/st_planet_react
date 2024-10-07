@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { axiosClient } from '../../axiosApi/axiosClient';
+import axios from "axios";
 
-const RegisterForm = (onSubmit) => {
+const RegisterForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -31,11 +31,11 @@ const RegisterForm = (onSubmit) => {
 
     try {
       // 회원가입 API 호출
-      const response = await axiosClient.put('customer/register', formData);
+      const response = await axios.put('http://localhost:8080/api'+ '/customer/register', formData);
       
       if (response.status === 200) {
         // 회원가입 성공 시 로그인 페이지로 리디렉션
-        router.push('/customer/login');
+        await router.push('/customer/login');
       }
     } catch (err) {
       setError('회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -129,7 +129,7 @@ const RegisterForm = (onSubmit) => {
         <div>
           <label>프로필 이미지 URL:</label>
           <input 
-            type="url" 
+            type="text"
             name="profileImageUrl" 
             value={formData.profile_image_url} 
             onChange={handleChange} 

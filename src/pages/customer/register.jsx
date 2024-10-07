@@ -1,4 +1,4 @@
-import RegisterForm from '../../components/customer/register';
+import RegisterForm from '../../components/customer/RegisterForm';
 import { axiosClient } from '../../axiosApi/axiosClient';
 import { useRouter } from 'next/router';
 

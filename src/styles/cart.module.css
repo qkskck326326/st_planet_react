@@ -1,0 +1,119 @@
+/*.container {
+    background-color: #f6f6f6; !* 원하는 배경색 *!
+    min-height: 100vh; !* 화면 전체 높이를 차지하도록 설정 *!
+    margin: 0;
+    padding: 0;
+}*/
+
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.stepIndicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.step {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    margin: 0 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.stepActive {
+    padding: 10px 20px;
+    border: 2px solid red;
+    border-radius: 50%;
+    margin: 0 10px;
+    font-size: 14px;
+    text-align: center;
+    color: red;
+    font-weight: bold;
+}
+
+.cartItems {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.cartItem {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.itemImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.itemDetails {
+    flex-grow: 1;
+}
+
+.itemQuantity input {
+    width: 50px;
+    padding: 5px;
+}
+
+.itemPrice {
+    width: 100px;
+    text-align: right;
+}
+
+.summary {
+    padding: 20px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.totalPrice {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.continueShopping {
+    padding: 10px 20px;
+    border: none;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+}
+
+.orderAll {
+    padding: 10px 20px;
+    border: none;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
