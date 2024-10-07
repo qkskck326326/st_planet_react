@@ -34,40 +34,43 @@ const logout = () => {
 // 헤더에 Authorization 라는 이름으로 refreshToken을 /reissue 엔드포인트로 반환,
 // 서버로부터 새로운 access토큰을 헤더로, refresh토큰을 data로 반환받는다
 const getNewAccessToken = async () => {
-    console.log('accessToken 재발급 절차 진행');
     const refreshToken = localStorage.getItem('refresh');
-    try {
+    if(refreshToken) {
+        console.log('accessToken 재발급 절차 진행');
 
-        console.log('refresh 토큰으로 Reissue요청:', refreshToken);
-        const response = await axiosClient.post('/auth/reissue', null, {
-            headers: {
-                'Authorization': `Bearer ${refreshToken}`
+        try {
+
+            console.log('refresh 토큰으로 Reissue요청:', refreshToken);
+            const response = await axiosClient.post('/auth/reissue', null, {
+                headers: {
+                    'Authorization': `Bearer ${refreshToken}`
+                }
+            });
+            console.log('Reissue 요청 완료:', response);
+
+            // 응답 바디에서 액세스 토큰을 추출합니다.
+            const newAccessToken = response.data.accessToken; // 서버가 액세스 토큰을 응답 바디에 포함하도록 해야 함
+            if (!newAccessToken) {
+                throw new Error('Access token missing in reissue response');
             }
-        });
-        console.log('Reissue 요청 완료:', response);
 
-        // 응답 바디에서 액세스 토큰을 추출합니다.
-        const newAccessToken = response.data.accessToken; // 서버가 액세스 토큰을 응답 바디에 포함하도록 해야 함
-        if (!newAccessToken) {
-            throw new Error('Access token missing in reissue response');
+            localStorage.setItem('token', newAccessToken);
+
+            // 서버에서 반환한 새로운 리프레시 토큰 저장
+            const newRefreshToken = response.data.refresh; // 서버에서 요청 바디에 포함한 리프레시 토큰 추충
+            if (newRefreshToken) {
+                localStorage.setItem('refresh', newRefreshToken);
+            }
+
+            return newAccessToken;
+        } catch (error) {
+            if (error.response && error.response.data.error === 'Refresh token is invalid or expired') {
+                logout();
+            } else {
+                console.error('An error occurred:', error);
+            }
+            return null;
         }
-
-        localStorage.setItem('token', newAccessToken);
-
-        // 서버에서 반환한 새로운 리프레시 토큰 저장
-        const newRefreshToken = response.data.refresh; // 서버에서 요청 바디에 포함한 리프레시 토큰 추충
-        if (newRefreshToken) {
-            localStorage.setItem('refresh', newRefreshToken);
-        }
-
-        return newAccessToken;
-    } catch (error) {
-        if (error.response && error.response.data.error === 'Refresh token is invalid or expired') {
-            logout();
-        } else {
-            console.error('An error occurred:', error);
-        }
-        return null;
     }
 };
 
@@ -85,6 +88,7 @@ const setAxiosInterceptors = (setErrorMessage) => {
         async (error) => {
             const originalRequest = error.config;
             const errorMessage = error.response.data.error;
+            const refreshToken = localStorage.getItem('refresh');
             console.log('에러 객체 : ', error)
             console.log("에러메세지 : " + errorMessage);
             console.log('요청 원문 : ', originalRequest);
@@ -95,9 +99,9 @@ const setAxiosInterceptors = (setErrorMessage) => {
                 logout();
             }
 
-            if (error.response) {
+            if (error.response && !(refreshToken)) {
                 // 에러 status 401  && 본 함수 내부 첫번째 요청 일 것 && 에러 메세지 InvalidRefreshToken(리프레쉬도 만료))
-                if (error.response.status === 401 && !(originalRequest._retry === true)) {
+                if (error.response.status === 401 && !originalRequest._retry) {
                     originalRequest._retry = true;
                     const newAccessToken = await getNewAccessToken();
                     if (newAccessToken) {
@@ -117,6 +121,9 @@ const setAxiosInterceptors = (setErrorMessage) => {
                     return new Promise(() => {}); // 후속 처리가 되지 않도록 함
                 }
                 setErrorMessage(errorMessage);
+            }else{
+                logout();
+                return new Promise(() => {});
             }
 
             return Promise.reject(error);
